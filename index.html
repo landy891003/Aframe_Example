@@ -1,0 +1,244 @@
+ <head>
+	<meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M59+)" content="ArFv1ZeTwzkhjNE00uAE+XtiQB41fwqG/TqlFMLrepd9sforQSvQE/tgfIbUMYNuNre4QR1k4/z8xp2mV3dbhwwAAABeeyJvcmlnaW4iOiJodHRwczovL2FmcmFtZS5pbzo0NDMiLCJmZWF0dXJlIjoiV2ViVlIxLjEiLCJleHBpcnkiOjE1MDEyMTcwMDIsImlzU3ViZG9tYWluIjp0cnVlfQ==">
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+   	<script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+	<script src="https://unpkg.com/aframe-event-set-component@3.0.3/dist/aframe-event-set-component.min.js"></script>
+ </head>
+
+<script>
+	var point = 0;
+	var lock  = 0;
+	var count = 1;
+
+	AFRAME.registerComponent('on-mouseenter', {
+		init:function(){
+		var data =this.data;
+		var el = this.el;  
+		this.el.addEventListener('click',function(){
+				if(count==0)
+				{
+					var video = document.getElementById("AnswerVideo");
+					var link = video.getAttribute('material').src;
+					document.getElementById("1").setAttribute('visible', false);
+					document.getElementById("0").setAttribute('visible', false);
+					document.getElementById("board").setAttribute('visible', false);
+					document.getElementById("back").setAttribute('visible', false);
+					video.setAttribute('visible', false);
+					link.pause();
+					count=1;
+				}
+				else{
+					lock=1;
+					document.getElementById("QuestionBox").setAttribute('visible', true);
+				}
+				
+		});
+		}
+	});
+	AFRAME.registerComponent('on-click-answer', {
+		init:function(){
+		var data = this.data;
+		var id = this.el.id;
+		var video = document.getElementById("AnswerVideo");
+		var link = video.getAttribute('material').src;
+		var QuestionBox = document.getElementById("QuestionBox");
+		var AnswerBoard = document.getElementById("board");
+		var Y_Message = document.getElementById("1");
+		var N_Message = document.getElementById("0");
+		var endButton = document.getElementById("back");
+		this.el.addEventListener('click',function(){	
+			if(lock==1){
+				QuestionBox.setAttribute('visible', false);
+				AnswerBoard.setAttribute('visible', true);
+				if(id=='YES'){
+					point=point+10;
+					document.getElementById("point").innerHTML = point;
+					Y_Message.setAttribute('visible', true);
+				}
+				else{
+					N_Message.setAttribute('visible', true);
+					video.setAttribute('visible', true);
+					link.play();
+				}
+				endButton.setAttribute('visible', true);
+				lock=0;
+				count=0;
+			}
+		});
+	}});
+
+
+</script>
+<html>
+<head>
+
+	<style>
+	#overlay {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		width: 100%;
+		padding: 10px 0;
+	/*   height: 100px; */
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		opacity: 1;
+		background-color: rgba(0, 0, 0, 0.6);
+		color: #ffffff;
+	}
+	#overlay > div {
+		text-align: center;
+		display:inline;
+	}
+	#overlay > div > p {
+	  display:inline;
+	  color: #ffffff;
+	  padding: 0.3em ;
+	  cursor: pointer;
+	  text-transform: uppercase;
+	}
+	a-scene {
+    display: block;
+    position: relative;
+    height: 100%;
+    width: 100%;
+	}
+	#app {
+		position: relative;
+	}
+	</style>
+
+</head>
+<body>
+	<div id="app">
+		<!--aframe-->
+		<a-scene cursor="rayOrigin: mouse">
+			<a-entity movement-controls="speed:0.0000000001" position="-2 -0.4 10">
+				<a-camera>
+					<a-entity
+						camera
+						look-controls="pointerLockEnabled:true">
+					</a-entity>
+				</a-camera>
+			</a-entity>
+			
+			<a-asset>
+				
+				<img id="sky" src="./texture/sky.jpg">
+				
+				<audio id="click-sound" preload='auto'
+					crossorigin="anonymous" 
+					src="https://cdn.glitch.com/6e50f5a6-2a20-482a-a160-68630e432610%2F55835__sergenious__laser.wav?1530451494997">
+				</audio>
+				
+				<a-asset-item  id="dorm" src="./texture/dorm.glb" ></a-asset-item>
+				<a-asset-item  id="bed" src="./texture/2.glb" ></a-asset-item>
+				
+				<video id="Video" muted preload='auto'
+					   src="https://cdn.glitch.global/f78472e2-b04b-4feb-9190-149d9e112433/Animation%203.mp4?v=1659105214080"
+					   width="0.5" height="0.5" loop="true"
+					   crossOrigin="anonymous">
+				</video>
+				
+			</a-asset>
+			
+			<a-entity id="AnswerVideo" position="-3.95 1.15 4.55"
+				material="shader: flat; src: #Video"
+				geometry="primitive: plane; width: 0.6; height: 0.5;"
+				rotation="0 90 0"
+				visible="false">
+			</a-entity>	
+			
+			<a-sky src="#sky"></a-sky>
+			<a-entity gltf-model="#dorm" scale="1 1 1"></a-entity>
+			<a-entity gltf-model="#bed" 
+				sound__click="src: #click-sound ;on: click; positional: false;" 
+				on-mouseenter 
+				position="-4.407 0.27 4.55" 
+				rotation="0 90 0">
+			</a-entity>
+
+			<!--QuestionBox-->
+			<a-entity id="QuestionBox" visible="false"> 
+				<a-plane color="#FFFFCD" 
+					position="-4 1.1 4.55" 
+					width="0.9" height="0.7" 
+					rotation="0 90 0" 
+					text="value: is it Bed B? ; align: center; width: 3;">
+				</a-plane>
+				<a-plane id="YES" 
+					on-click-answer 
+					position="-3.95 0.9 4.8" 
+					rotation="0 90 0" 
+					width="0.2" height="0.1" 
+					color="red" 
+					text="value: YES; align: center; width: 2;" side="double"
+					event-set__enter="_event: mouseenter; color: #FF7F7F"
+					event-set__leave="_event: mouseleave; color: red"
+				>
+				</a-plane>
+				<a-plane id="NO"  
+					on-click-answer 
+					position="-3.95 0.9 4.3" 
+					rotation="0 90 0" 
+					width="0.2" height="0.1" 
+					color="blue" 
+					text="value: NO; align: center; width: 2;" side="double"
+					event-set__enter="_event: mouseenter; color: #add8e6"
+					event-set__leave="_event: mouseleave; color: blue"
+					>
+				</a-plane>
+			</a-entity>
+			
+			
+			<!--AnswerBox-->
+			<a-plane id="board" 
+				width="0.9" height="0.7" 
+				color="#FFFFCD" 
+				position="-4 1.1 4.55" 
+				rotation="0 90 0" 
+				visible="false">
+			</a-plane>
+			<a-text id="1" 
+				position="-4 1.1 4.8" 
+				value="Correct +10"
+				width="2"		
+				color="black"  
+				rotation="0 90 0" 
+				visible="false">
+			</a-text>
+			
+			<a-text id="0" 
+				position="-4 1.1 4.8" 
+				value="inCorrect" 
+				width="2"
+				color="black" 
+				rotation="0 90 0" 
+				visible="false">
+			</a-text>
+			<a-plane id="back" 
+				on-mouseenter 
+				sound__click="src: #click-sound ;on: click; positional: false;" 
+				position="-3.95 0.85 4.56" 
+				rotation="0 90 0" 
+				visible="false"
+				width="0.2" height="0.1" 
+				color="blue" 
+				text="value: End; align: center; width: 2;"
+				event-set__enter="_event: mouseenter; color: #add8e6"
+				event-set__leave="_event: mouseleave; color: blue">
+			</a-plane>
+		</a-scene>	
+	</div>
+	<!--Score-->
+	<div id="overlay">
+		<div>
+			<p>Score:</p>
+			<p id="point">0</p>	
+		</div>
+	</div>
+	
+</body>
+</html>
