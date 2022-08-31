@@ -11,7 +11,6 @@
 
 <img src="https://i.imgur.com/ZNKAw19.png" width="800"/>
 <img src="https://i.imgur.com/WhXZVUL.png" width="800"/>
-<img src="https://i.imgur.com/WhXZVUL.png" width="800"/>
 <img src="https://i.imgur.com/uwktGyu.png" width="800"/>
 <img src="https://i.imgur.com/ooNtURO.png" width="800"/>
 
